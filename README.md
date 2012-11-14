@@ -1,2 +1,1 @@
-demo-site-plugin
-================
+Demo site plugin. An Over the Barn production!
