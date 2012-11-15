@@ -18,6 +18,16 @@ function demo_site_plugin_export_posts() {
 	add_option( 'demo_site_plugin_posts_table_default', $result );
 }
 
+function demo_site_plugin_import_posts() {
+	$posts = unserialize( get_option( 'demo_site_plugin_posts_table_default' ) );
+
+	foreach ( $posts as $post ) {
+		$post = (array) $post;
+		unset( $post['ID'] );
+		wp_insert_post( $post );
+	}
+}
+
 // Remove autosaves?
 // Serialize the table
 // Store as an option
