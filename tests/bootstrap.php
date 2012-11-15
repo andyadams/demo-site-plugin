@@ -14,4 +14,4 @@ if( file_exists( $path ) ) {
     exit( "Couldn't find path to wordpress-tests/bootstrap.php\n" );
 }
 
-require_once( dirname( __FILE__ ) . '/TestHelper.php' );
+require_once( dirname( __FILE__ ) . '/OTB_UnitTestCase.php' );

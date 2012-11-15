@@ -2,11 +2,9 @@
 
 add_action( 'admin_action_demo_site_action', 'demo_site_action' );
 function demo_site_action() {
+	demo_site_plugin_export_posts();
 
-	$result = unserialize( $result );
-	var_dump( $result ); exit;
-
-	wp_redirect( $_SERVER['HTTP_REFERER'] );
+	wp_redirect( add_query_arg( 'export_success', 'true', $_SERVER['HTTP_REFERER'] ) );
 	exit();
 }
 
@@ -15,7 +13,7 @@ function demo_site_plugin_export_posts() {
 	$result = $wpdb->get_results( "SELECT * FROM wp_posts;" );
 	$result = serialize( $result );
 
-	add_option( 'demo_site_plugin_posts_table_default', $result );
+	update_option( 'demo_site_plugin_posts_table_default', $result );
 }
 
 function demo_site_plugin_import_posts() {

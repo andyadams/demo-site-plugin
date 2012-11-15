@@ -32,7 +32,7 @@ function demo_site_plugin_string_html() {
 
 function demo_site_plugin_add_options_page() {
 	$title = __( 'Demo Site', 'demo_site_plugin' );
-	add_options_page( $title, $title, 'manage_options', __FILE__, 'demo_site_plugin_options_form' );
+	add_options_page( $title, $title, 'manage_options', 'demo_site_plugin', 'demo_site_plugin_options_form' );
 }
 add_action( 'admin_menu', 'demo_site_plugin_add_options_page' );
 
@@ -41,6 +41,11 @@ function demo_site_plugin_options_form() {
 	<div class="wrap">
 		<?php screen_icon(); ?>
 		<h2><?php _e( 'Demo site plugin options', 'demo_site_plugin' ); ?></h2>
+		<?php if ( isset( $_GET['export_success'] ) && $_GET['export_success'] ) : ?>
+			<div id="export-success" class="updated">
+				<p><strong><?php _e( 'Defaults successfully saved', 'demo_site_plugin' ); ?></strong></p>
+			</div>
+		<?php endif; ?>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'demo_site_plugin_options' ); ?>
 			<?php do_settings_sections( 'demo_site_plugin_options', 'demo_site_plugin_options' ); ?>
