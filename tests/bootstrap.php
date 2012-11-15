@@ -13,3 +13,5 @@ if( file_exists( $path ) ) {
 } else {
     exit( "Couldn't find path to wordpress-tests/bootstrap.php\n" );
 }
+
+require_once( dirname( __FILE__ ) . '/TestHelper.php' );

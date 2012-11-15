@@ -1,6 +1,6 @@
 <?php
 
-class ImporterTest extends WP_UnitTestCase {
+class ImporterTest extends OTB_UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 	}
@@ -10,10 +10,7 @@ class ImporterTest extends WP_UnitTestCase {
 
 		$wpdb->query( "DELETE FROM wp_posts;" );
 
-		$sample_post = array(
-			'post_title' => 'I love demo sites!',
-			'post_status' => 'publish'
-		);
+		$sample_post = $this->post_fixtures['i_love_demo_sites'];
 
 		$result = wp_insert_post( $sample_post );
 
@@ -26,12 +23,5 @@ class ImporterTest extends WP_UnitTestCase {
 		$all_posts = get_posts();
 
 		$this->assertObjectEqualsArrayForExistingKeys( $all_posts[0], $sample_post );
-	}
-
-	protected function assertObjectEqualsArrayForExistingKeys( $object, $array ) {
-		// Convert object to array, and filter keys that are not in both arrays
-		$object_to_array = array_intersect_key( (array) $object, $array );
-
-		$this->assertEquals( $object_to_array, $array );
 	}
 }
