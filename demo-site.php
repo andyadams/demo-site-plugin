@@ -8,6 +8,8 @@ Version: 0.1
 Author URI: #
 */
 
+require_once( dirname( __FILE__ ) . '/save_defaults.php' );
+
 function demo_site_plugin_init() {
 	register_setting( 'demo_site_plugin_options', 'demo_site_plugin_options' );
 	add_settings_section( 'demo_site_plugin_main', 'Main Settings', 'demo_site_plugin_section_text', 'demo_site_plugin_options' );
@@ -43,6 +45,10 @@ function demo_site_plugin_options_form() {
 			<?php settings_fields( 'demo_site_plugin_options' ); ?>
 			<?php do_settings_sections( 'demo_site_plugin_options', 'demo_site_plugin_options' ); ?>
 			<input name="Submit" type="submit" value="<?php esc_attr_e('Save Changes'); ?>" />
+		</form>
+		<form method="post" action="<?php echo admin_url( 'admin.php' ); ?>">
+			<input type="hidden" name="action" value="demo_site_action" />
+			<input name="Submit" type="submit" value="<?php esc_attr_e('Do action'); ?>" />
 		</form>
 	</div>
 	<?php
