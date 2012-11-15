@@ -7,7 +7,7 @@ $path = dirname( __FILE__ ) . '/../vendor/wordpress-tests/bootstrap.php';
 
 if( file_exists( $path ) ) {
 	$GLOBALS['wp_tests_options'] = array(
-		'active_plugins' => array( 'demo-site-plugin/demo-site.php' )
+		'active_plugins' => array( 'demo-site-plugin/demo_site_plugin.php' )
 	);
     require_once $path;
 } else {

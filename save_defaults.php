@@ -1,10 +1,19 @@
 <?php
 
-add_action( 'admin_action_demo_site_action', 'demo_site_action' );
-function demo_site_action() {
-	demo_site_plugin_export_posts();
+add_action( 'admin_action_demo_site_plugin_set_default_database', 'demo_site_plugin_set_default_database' );
+function demo_site_plugin_set_default_database() {
+	if ( ! isset( $_POST['_wpnonce_demo_site_plugin_set_default_database'] ) || ! wp_verify_nonce( $_POST['_wpnonce_demo_site_plugin_set_default_database'], 'demo_site_plugin_set_default_database' ) ) {
+		echo "Invalid request";
+		exit;
+	}
 
-	wp_redirect( add_query_arg( 'export_success', 'true', $_SERVER['HTTP_REFERER'] ) );
+	if ( demo_site_plugin_export_posts() ) {
+		$redirect_url = add_query_arg( 'export_success', 'true', $_SERVER['HTTP_REFERER'] );
+	} else {
+		$redirect_url = add_query_arg( 'export_success', 'false', $_SERVER['HTTP_REFERER'] );
+	}
+
+	wp_redirect( $redirect_url );
 	exit();
 }
 
@@ -14,6 +23,8 @@ function demo_site_plugin_export_posts() {
 	$result = serialize( $result );
 
 	update_option( 'demo_site_plugin_posts_table_default', $result );
+
+	return true;
 }
 
 function demo_site_plugin_import_posts() {
