@@ -82,42 +82,21 @@ function demo_site_plugin_restore_table_to_defaults( $table_name ) {
 }
 
 function demo_site_plugin_unset_primary_key_for_table( $data, $table_name ) {
-	switch ( $table_name ) {
-		case 'commentmeta':
-			$primary_key = 'meta_id';
-			break;
-		case 'comments':
-			$primary_key = 'comment_ID';
-			break;
-		case 'links':
-			$primary_key = 'link_id';
-			break;
-		case 'options':
-			$primary_key = 'option_id';
-			break;
-		case 'postmeta':
-			$primary_key = 'meta_id';
-			break;
-		case 'terms':
-			$primary_key = 'term_id';
-			break;
-		case 'term_taxonomy':
-			$primary_key = 'term_taxonomy_id';
-			break;
-		case 'usermeta':
-			$primary_key = 'umeta_id';
-			break;
-		case 'posts':
-		case 'users':
-			$primary_key = 'ID';
-			break;
-		default:
-			$primary_key = NULL;
-			break;
-	}
+	$primary_keys = array(
+		'commentmeta' => 'meta_id',
+		'comments' => 'comment_ID',
+		'links' => 'link_id',
+		'options' => 'option_id',
+		'postmeta' => 'meta_id',
+		'posts' => 'ID',
+		'terms' => 'term_id',
+		'term_taxonomy' => 'term_taxonomy_id',
+		'usermeta' => 'umeta_id',
+		'users' => 'ID'
+	);
 
-	if ( NULL != $primary_key ) {
-		unset( $data[$primary_key] );
+	if ( isset( $primary_keys[$table_name] ) ) {
+		unset( $data[$primary_keys[$table_name]] );
 	}
 }
 // Remove autosaves?
