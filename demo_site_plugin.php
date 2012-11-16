@@ -90,5 +90,25 @@ function demo_site_plugin_options_form() {
 function demo_site_plugin_create_site_with_token( $token ) {
 	DSP_DatabaseHandler::clone_defaults( "wp_{$token}_" );
 
+	demo_site_plugin_create_semi_admin_for_token( $token );
+
 	update_option( 'demo_site_plugin_active_demo_tokens', array( $token ) );
+}
+
+function demo_site_plugin_create_semi_admin_for_token( $token ) {
+	global $wpdb;
+
+	$original_prefix = $wpdb->prefix;
+
+	$wpdb->set_prefix( "wp_{$token}_" );
+
+	add_role( 'semi-admin', 'Semi-Admin' );
+	$semi_admin_id = wp_create_user( 'semi_admin', 'password' );
+	$semi_admin = new WP_User( $semi_admin_id );
+	$semi_admin->set_role( 'semi-admin' );
+
+	global $wp_roles;
+	//var_dump( $wp_roles );
+
+	$wpdb->set_prefix( $original_prefix );
 }

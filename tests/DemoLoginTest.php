@@ -47,9 +47,9 @@ class DemoLoginTest extends OTB_UnitTestCase {
 	}
 
 	public function testSemiAdminCreated() {
-		$semi_admin_users = get_users( array( 'role' => 'semi-admin' ) );
+		global $wpdb;
 
-		$this->assertTrue( empty( $semi_admin_users ) );
+		$wpdb->set_prefix( $this->prefix );
 
 		$token = $this->token;
 
