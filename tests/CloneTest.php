@@ -5,12 +5,15 @@ class CloneTest extends OTB_UnitTestCase {
 		parent::setUp();
 	}
 
-	public function tearDown() {}
+	public function tearDown() {
+		parent::tearDown();
+		$this->cleanupTablesWithPrefix( $this->prefix );
+	}
 
 	public function testCloneTablesAreCreated() {
 		global $wpdb;
 
-		$prefix = 'wp_dummy_';
+		$prefix = $this->prefix;
 
 		DSP_DatabaseHandler::save_tables();
 		DSP_DatabaseHandler::clone_defaults( $prefix );
@@ -18,8 +21,6 @@ class CloneTest extends OTB_UnitTestCase {
 		$result = $wpdb->get_results( "SHOW TABLES LIKE '%$prefix%';" );
 
 		$this->assertEquals( count( DSP_DatabaseHandler::$all_tables ), count( $result ) );
-
-		$this->cleanupTablesWithPrefix( $prefix );
 	}
 
 	public function testDemoLoginRewrite() {

@@ -88,7 +88,7 @@ function demo_site_plugin_options_form() {
 }
 
 function demo_site_plugin_create_site_with_token( $token ) {
-	DSP_DatabaseHandler::clone_defaults( "wp_{$token}" );
+	DSP_DatabaseHandler::clone_defaults( "wp_{$token}_" );
 
 	update_option( 'demo_site_plugin_active_demo_tokens', array( $token ) );
 }

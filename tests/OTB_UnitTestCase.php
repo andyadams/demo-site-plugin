@@ -2,8 +2,12 @@
 
 abstract class OTB_UnitTestCase extends WP_UnitTestCase {
 	protected $post_fixtures, $plugin_file;
+	protected $token = 'abcdef';
+	protected $prefix = 'wp_abcdef_';
 
 	public function setUp() {
+		if ( ! defined( 'SAVEQUERIES' ) ) {define('SAVEQUERIES', true);}
+
 		global $wpdb;
 
 		$i_love_demo_sites = array(
@@ -20,6 +24,13 @@ abstract class OTB_UnitTestCase extends WP_UnitTestCase {
 		$this->plugin_file = realpath( dirname( __FILE__ ) . '/../demo_site_plugin.php' );
 
 		parent::setUp();
+	}
+
+	public function tearDown() {
+		global $wpdb;
+		$wpdb->set_prefix( 'wp_' );
+		parent::tearDown();
+		$this->cleanupPluginOptions();
 	}
 
 	protected function assertObjectEqualsArrayForExistingKeys( $object, $array ) {
@@ -39,5 +50,11 @@ abstract class OTB_UnitTestCase extends WP_UnitTestCase {
 			$table_name = reset( $table );
 			$wpdb->query( "DROP TABLE {$table_name};" );
 		}
+	}
+
+	protected function cleanupPluginOptions() {
+		global $wpdb;
+
+		$result = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%demo_site_plugin_%';" );
 	}
 }
