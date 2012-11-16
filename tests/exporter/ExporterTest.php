@@ -14,7 +14,7 @@ class ExporterTest extends OTB_UnitTestCase {
 
 		$result = wp_insert_post( $sample_post );
 
-		demo_site_plugin_save_table_defaults( 'posts' );
+		DSP_DatabaseHandler::save_tables( array( 'posts' ) );
 
 		$posts = unserialize( get_option( 'demo_site_plugin_posts_table_defaults' ) );
 

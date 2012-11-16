@@ -1,6 +1,6 @@
 <?php
 
-class DSP_Database_Handler {
+class DSP_DatabaseHandler {
 	public static $all_tables = array(
 		'commentmeta', 'comments', 'links', 'options', 'postmeta',
 		'posts', 'terms', 'term_relationships', 'term_taxonomy', 'usermeta', 'users'
@@ -35,7 +35,7 @@ class DSP_Database_Handler {
 		}
 	}
 
-	protected function save_tables( $tables ) {
+	public function save_tables( $tables ) {
 		global $wpdb;
 
 		foreach ( $tables as $table_name ) {
@@ -53,7 +53,7 @@ class DSP_Database_Handler {
 		return true;
 	}
 
-	protected function reset_tables( $tables ) {
+	public function reset_tables( $tables ) {
 		global $wpdb;
 
 		foreach ( $tables as $table_name ) {
@@ -80,5 +80,5 @@ class DSP_Database_Handler {
 	}
 }
 
-add_action( 'admin_action_demo_site_plugin_save_defaults', array( 'DSP_Database_Handler', 'save_defaults' ) );
-add_action( 'admin_action_demo_site_plugin_reset_defaults', array( 'DSP_Database_Handler', 'reset_defaults' ) );
+add_action( 'admin_action_demo_site_plugin_save_defaults', array( 'DSP_DatabaseHandler', 'save_defaults' ) );
+add_action( 'admin_action_demo_site_plugin_reset_defaults', array( 'DSP_DatabaseHandler', 'reset_defaults' ) );

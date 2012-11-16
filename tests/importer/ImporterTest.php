@@ -14,11 +14,11 @@ class ImporterTest extends OTB_UnitTestCase {
 
 		$result = wp_insert_post( $sample_post );
 
-		demo_site_plugin_save_table_defaults( 'posts' );
+		DSP_DatabaseHandler::save_tables( array( 'posts' ) );
 
 		$wpdb->query( "DELETE FROM wp_posts;" );
 
-		demo_site_plugin_restore_table_to_defaults( 'posts' );
+		DSP_DatabaseHandler::reset_tables( array( 'posts' ) );
 
 		$all_posts = get_posts();
 
