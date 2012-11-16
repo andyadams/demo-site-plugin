@@ -5,6 +5,14 @@ class CloneTest extends OTB_UnitTestCase {
 		parent::setUp();
 	}
 
+	public function tearDown() {
+		global $wpdb;
+
+		foreach ( DSP_DatabaseHandler::$all_tables as $table_name ) {
+			$wpdb->query( "DROP TABLE wp_dummy_$table_name;" );
+		}
+	}
+
 	public function testCloneTablesAreCreated() {
 		global $wpdb;
 
