@@ -32,5 +32,7 @@ class DemoLoginTest extends OTB_UnitTestCase {
 		$created_tables = $wpdb->get_results( "SHOW TABLES LIKE '%wp_{$token}_%';" );
 
 		$this->assertEquals( count( DSP_DatabaseHandler::$all_tables ), count( $created_tables ) );
+
+		$this->cleanupTablesWithPrefix( "wp_{$token}" );
 	}
 }

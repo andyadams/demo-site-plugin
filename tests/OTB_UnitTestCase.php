@@ -28,4 +28,16 @@ abstract class OTB_UnitTestCase extends WP_UnitTestCase {
 
 		$this->assertEquals( $object_to_array, $array );
 	}
+
+	protected function cleanupTablesWithPrefix( $prefix ) {
+		global $wpdb;
+
+		$result = $wpdb->get_results( "SHOW TABLES LIKE '%$prefix%';" );
+
+		foreach ( $result as $table ) {
+			$table = (array) $table;
+			$table_name = reset( $table );
+			$wpdb->query( "DROP TABLE {$table_name};" );
+		}
+	}
 }

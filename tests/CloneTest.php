@@ -10,19 +10,16 @@ class CloneTest extends OTB_UnitTestCase {
 	public function testCloneTablesAreCreated() {
 		global $wpdb;
 
-		DSP_DatabaseHandler::save_tables();
-		DSP_DatabaseHandler::clone_defaults( 'wp_dummy_' );
+		$prefix = 'wp_dummy_';
 
-		$result = $wpdb->get_results( "SHOW TABLES LIKE '%wp_dummy_%';" );
+		DSP_DatabaseHandler::save_tables();
+		DSP_DatabaseHandler::clone_defaults( $prefix );
+
+		$result = $wpdb->get_results( "SHOW TABLES LIKE '%$prefix%';" );
 
 		$this->assertEquals( count( DSP_DatabaseHandler::$all_tables ), count( $result ) );
 
-		// Cleanup created tables
-		foreach ( $result as $table ) {
-			$table = (array) $table;
-			$table_name = reset( $table );
-			$wpdb->query( "DROP TABLE {$table_name};" );
-		}
+		$this->cleanupTablesWithPrefix( $prefix );
 	}
 
 	public function testDemoLoginRewrite() {
