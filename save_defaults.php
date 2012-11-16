@@ -1,6 +1,5 @@
 <?php
 
-add_action( 'admin_action_demo_site_plugin_set_default_database', 'demo_site_plugin_set_default_database' );
 function demo_site_plugin_set_default_database() {
 	if ( ! isset( $_POST['_wpnonce_demo_site_plugin_set_default_database'] ) || ! wp_verify_nonce( $_POST['_wpnonce_demo_site_plugin_set_default_database'], 'demo_site_plugin_set_default_database' ) ) {
 		echo "Invalid request";
@@ -30,6 +29,7 @@ function demo_site_plugin_set_default_database() {
 	wp_redirect( $redirect_url );
 	exit();
 }
+add_action( 'admin_action_demo_site_plugin_set_default_database', 'demo_site_plugin_set_default_database' );
 
 function demo_site_plugin_save_table_defaults( $table_name ) {
 	global $wpdb;
@@ -47,6 +47,11 @@ function demo_site_plugin_save_table_defaults( $table_name ) {
 }
 
 function demo_site_plugin_reset_defaults() {
+	if ( ! isset( $_POST['_wpnonce_demo_site_plugin_reset_defaults'] ) || ! wp_verify_nonce( $_POST['_wpnonce_demo_site_plugin_reset_defaults'], 'demo_site_plugin_reset_defaults' ) ) {
+		echo "Invalid request";
+		exit;
+	}
+
 	$exported_tables = array(
 		'commentmeta', 'comments', 'links', 'options', 'postmeta',
 		'posts', 'terms', 'term_relationships', 'term_taxonomy', 'usermeta', 'users'
@@ -60,17 +65,29 @@ function demo_site_plugin_reset_defaults() {
 			break;
 		}
 	}
+
+	if ( $success ) {
+		$redirect_url = add_query_arg( 'reset_defaults_success', 'true', $_SERVER['HTTP_REFERER'] );
+	} else {
+		$redirect_url = add_query_arg( 'reset_defaults_success', 'false', $_SERVER['HTTP_REFERER'] );
+	}
+
+	wp_redirect( $redirect_url );
+	exit();
 }
+add_action( 'admin_action_demo_site_plugin_reset_defaults', 'demo_site_plugin_reset_defaults' );
 
 function demo_site_plugin_restore_table_to_defaults( $table_name ) {
 	global $wpdb;
 
 	$rows = unserialize( get_option( "demo_site_plugin_{$table_name}_table_defaults" ) );
 
+	$wpdb->query( "DELETE FROM {$wpdb->prefix}{$table_name};" );
+
 	if ( $rows ) {
 		foreach ( $rows as $row ) {
 			$data = (array) $row;
-			demo_site_plugin_unset_primary_key_for_table( $data, $table_name );
+			//$data = demo_site_plugin_unset_primary_key_for_table( $data, $table_name );
 			$wpdb->insert(
 				$wpdb->prefix . $table_name,
 				$data
@@ -98,6 +115,8 @@ function demo_site_plugin_unset_primary_key_for_table( $data, $table_name ) {
 	if ( isset( $primary_keys[$table_name] ) ) {
 		unset( $data[$primary_keys[$table_name]] );
 	}
+
+	return $data;
 }
 // Remove autosaves?
 // Serialize the table
