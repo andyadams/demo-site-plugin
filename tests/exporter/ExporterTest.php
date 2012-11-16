@@ -14,9 +14,9 @@ class ExporterTest extends OTB_UnitTestCase {
 
 		$result = wp_insert_post( $sample_post );
 
-		DSP_DatabaseHandler::save_tables( array( 'posts' ) );
+		DSP_DatabaseHandler::save_tables( $wpdb->prefix, array( 'posts' ) );
 
-		$posts = unserialize( get_option( 'demo_site_plugin_posts_table_defaults' ) );
+		$posts = maybe_unserialize( get_option( 'demo_site_plugin_posts_table_defaults' ) );
 
 		$this->assertObjectEqualsArrayForExistingKeys( $posts[0], $sample_post );
 	}

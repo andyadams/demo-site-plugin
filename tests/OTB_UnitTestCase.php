@@ -4,6 +4,8 @@ abstract class OTB_UnitTestCase extends WP_UnitTestCase {
 	protected $post_fixtures;
 
 	public function setUp() {
+		global $wpdb;
+
 		$i_love_demo_sites = array(
 			'post_title' => 'I love demo sites!',
 			'post_status' => 'publish'
@@ -12,6 +14,8 @@ abstract class OTB_UnitTestCase extends WP_UnitTestCase {
 		$this->post_fixtures = array(
 			'i_love_demo_sites' => $i_love_demo_sites
 		);
+
+		$wpdb->set_prefix( 'wp_' );
 
 		parent::setUp();
 	}
