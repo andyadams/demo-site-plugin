@@ -7,8 +7,30 @@ Author: Andy Adams
 Version: 0.1
 Author URI: #
 */
-
 require_once( dirname( __FILE__ ) . '/save_defaults.php' );
+
+function demo_site_plugin_add_rewrite_rules() {
+	add_rewrite_rule( 'demo-login/?$', 'index.php?demo_login=true', 'top' );
+	global $wp_rewrite;
+	$wp_rewrite->flush_rules(false);
+}
+add_action( 'init', 'demo_site_plugin_add_rewrite_rules' );
+
+function demo_site_plugin_template_redirect() {
+	global $wp_query;
+
+	if( $wp_query->get( 'demo_login' ) ):
+		include( plugin_dir_path( __FILE__ ) . "/login.php" );
+		exit();
+	endif;
+}
+add_filter( 'template_redirect', 'demo_site_plugin_template_redirect' );
+
+function demo_site_plugin_query_vars( $query_vars ){
+    $query_vars[] = 'demo_login';
+    return $query_vars;
+}
+add_filter( 'query_vars', 'demo_site_plugin_query_vars' );
 
 function demo_site_plugin_init() {
 	register_setting( 'demo_site_plugin_options', 'demo_site_plugin_options' );

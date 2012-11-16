@@ -28,7 +28,7 @@ class DSP_DatabaseHandler {
 		exit();
 	}
 
-	public function clone_defaults( $prefix=NULL, $tables=NULL ) {
+	public function clone_defaults( $prefix, $tables=NULL ) {
 		self::reset_tables( $prefix, $tables );
 	}
 

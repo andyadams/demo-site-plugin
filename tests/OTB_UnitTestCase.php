@@ -1,7 +1,7 @@
 <?php
 
 abstract class OTB_UnitTestCase extends WP_UnitTestCase {
-	protected $post_fixtures;
+	protected $post_fixtures, $plugin_file;
 
 	public function setUp() {
 		global $wpdb;
@@ -16,6 +16,8 @@ abstract class OTB_UnitTestCase extends WP_UnitTestCase {
 		);
 
 		$wpdb->set_prefix( 'wp_' );
+
+		$this->plugin_file = realpath( dirname( __FILE__ ) . '/../demo_site_plugin.php' );
 
 		parent::setUp();
 	}
