@@ -51,7 +51,13 @@ class DSP_DatabaseHandler {
 		}
 
 		foreach ( $tables as $table_name ) {
-			$results = $wpdb->get_results( "SELECT * FROM {$prefix}{$table_name};" );
+			$where = '';
+
+			if ( 'options' == $table_name ) {
+				$where = " WHERE option_name NOT LIKE '%demo_site_plugin_%' ";
+			}
+
+			$results = $wpdb->get_results( "SELECT * FROM {$prefix}{$table_name} $where;" );
 
 			if ( false === $results ) {
 				return false;

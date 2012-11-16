@@ -86,3 +86,7 @@ function demo_site_plugin_options_form() {
 	</div>
 	<?php
 }
+
+function demo_site_plugin_create_site_with_token( $token ) {
+	update_option( 'demo_site_plugin_active_demo_tokens', array( $token ) );
+}
