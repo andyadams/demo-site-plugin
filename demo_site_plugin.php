@@ -52,8 +52,8 @@ function demo_site_plugin_options_form() {
 			<input name="Submit" type="submit" value="<?php esc_attr_e('Save Changes'); ?>" />
 		</form>-->
 		<form method="post" action="<?php echo admin_url( 'admin.php' ); ?>">
-			<?php wp_nonce_field( 'demo_site_plugin_set_default_database', '_wpnonce_demo_site_plugin_set_default_database' ); ?>
-			<input type="hidden" name="action" value="demo_site_plugin_set_default_database" />
+			<?php wp_nonce_field( 'demo_site_plugin_save_defaults', '_wpnonce_demo_site_plugin_save_defaults' ); ?>
+			<input type="hidden" name="action" value="demo_site_plugin_save_defaults" />
 			<input name="Submit" type="submit" value="<?php esc_attr_e( 'Save current database as default', 'demo_site_plugin' ); ?>" />
 		</form>
 		<form method="post" action="<?php echo admin_url( 'admin.php' ); ?>">

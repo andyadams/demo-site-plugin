@@ -1,123 +1,84 @@
 <?php
 
-function demo_site_plugin_set_default_database() {
-	if ( ! isset( $_POST['_wpnonce_demo_site_plugin_set_default_database'] ) || ! wp_verify_nonce( $_POST['_wpnonce_demo_site_plugin_set_default_database'], 'demo_site_plugin_set_default_database' ) ) {
-		echo "Invalid request";
-		exit;
-	}
-
-	$exported_tables = array(
+class DSP_Database_Handler {
+	public static $all_tables = array(
 		'commentmeta', 'comments', 'links', 'options', 'postmeta',
 		'posts', 'terms', 'term_relationships', 'term_taxonomy', 'usermeta', 'users'
 	);
 
-	$success = true;
+	public function save_defaults() {
+		self::check_nonce_for_action( 'demo_site_plugin_save_defaults' );
 
-	foreach ( $exported_tables as $table_name ) {
-		if ( ! demo_site_plugin_save_table_defaults( $table_name ) ) {
-			$success = false;
-			break;
+		$success = self::save_tables( self::$all_tables );
+
+		$redirect_url = add_query_arg( 'export_success', $success, $_SERVER['HTTP_REFERER'] );
+
+		wp_redirect( $redirect_url );
+		exit();
+	}
+
+	public function reset_defaults() {
+		self::check_nonce_for_action( 'demo_site_plugin_reset_defaults' );
+
+		$success = self::reset_tables( self::$all_tables );
+
+		$redirect_url = add_query_arg( 'reset_success', $success, $_SERVER['HTTP_REFERER'] );
+
+		wp_redirect( $redirect_url );
+		exit();
+	}
+
+	protected function check_nonce_for_action( $action ) {
+		if ( ! isset( $_POST["_wpnonce_$action"] ) || ! wp_verify_nonce( $_POST["_wpnonce_$action"], $action ) ) {
+			echo "Invalid request";
+			exit;
 		}
 	}
 
-	if ( $success ) {
-		$redirect_url = add_query_arg( 'export_success', 'true', $_SERVER['HTTP_REFERER'] );
-	} else {
-		$redirect_url = add_query_arg( 'export_success', 'false', $_SERVER['HTTP_REFERER'] );
-	}
+	protected function save_tables( $tables ) {
+		global $wpdb;
 
-	wp_redirect( $redirect_url );
-	exit();
-}
-add_action( 'admin_action_demo_site_plugin_set_default_database', 'demo_site_plugin_set_default_database' );
+		foreach ( $tables as $table_name ) {
+			$results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}{$table_name};" );
 
-function demo_site_plugin_save_table_defaults( $table_name ) {
-	global $wpdb;
-	$results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}{$table_name};" );
+			if ( false === $results ) {
+				return false;
+			}
 
-	if ( false === $results ) {
-		return false;
-	}
+			$results = serialize( $results );
 
-	$results = serialize( $results );
-
-	update_option( "demo_site_plugin_{$table_name}_table_defaults", $results );
-
-	return true;
-}
-
-function demo_site_plugin_reset_defaults() {
-	if ( ! isset( $_POST['_wpnonce_demo_site_plugin_reset_defaults'] ) || ! wp_verify_nonce( $_POST['_wpnonce_demo_site_plugin_reset_defaults'], 'demo_site_plugin_reset_defaults' ) ) {
-		echo "Invalid request";
-		exit;
-	}
-
-	$exported_tables = array(
-		'commentmeta', 'comments', 'links', 'options', 'postmeta',
-		'posts', 'terms', 'term_relationships', 'term_taxonomy', 'usermeta', 'users'
-	);
-
-	$success = true;
-
-	foreach ( $exported_tables as $table_name ) {
-		if ( ! demo_site_plugin_restore_table_to_defaults( $table_name ) ) {
-			$success = false;
-			break;
+			update_option( "demo_site_plugin_{$table_name}_table_defaults", $results );
 		}
+
+		return true;
 	}
 
-	if ( $success ) {
-		$redirect_url = add_query_arg( 'reset_defaults_success', 'true', $_SERVER['HTTP_REFERER'] );
-	} else {
-		$redirect_url = add_query_arg( 'reset_defaults_success', 'false', $_SERVER['HTTP_REFERER'] );
-	}
+	protected function reset_tables( $tables ) {
+		global $wpdb;
 
-	wp_redirect( $redirect_url );
-	exit();
-}
-add_action( 'admin_action_demo_site_plugin_reset_defaults', 'demo_site_plugin_reset_defaults' );
+		foreach ( $tables as $table_name ) {
+			$rows = unserialize( get_option( "demo_site_plugin_{$table_name}_table_defaults" ) );
 
-function demo_site_plugin_restore_table_to_defaults( $table_name ) {
-	global $wpdb;
+			$wpdb->query( "DELETE FROM {$wpdb->prefix}{$table_name};" );
 
-	$rows = unserialize( get_option( "demo_site_plugin_{$table_name}_table_defaults" ) );
+			if ( $rows ) {
+				foreach ( $rows as $row ) {
+					$data = (array) $row;
+					$result = $wpdb->insert(
+						$wpdb->prefix . $table_name,
+						$data
+					);
 
-	$wpdb->query( "DELETE FROM {$wpdb->prefix}{$table_name};" );
-
-	if ( $rows ) {
-		foreach ( $rows as $row ) {
-			$data = (array) $row;
-			//$data = demo_site_plugin_unset_primary_key_for_table( $data, $table_name );
-			$wpdb->insert(
-				$wpdb->prefix . $table_name,
-				$data
-			);
+					if ( false === $result ) {
+						return false;
+					}
+				}
+			}
 		}
-	}
 
-	return true;
+		return true;
+	}
 }
 
-function demo_site_plugin_unset_primary_key_for_table( $data, $table_name ) {
-	$primary_keys = array(
-		'commentmeta' => 'meta_id',
-		'comments' => 'comment_ID',
-		'links' => 'link_id',
-		'options' => 'option_id',
-		'postmeta' => 'meta_id',
-		'posts' => 'ID',
-		'terms' => 'term_id',
-		'term_taxonomy' => 'term_taxonomy_id',
-		'usermeta' => 'umeta_id',
-		'users' => 'ID'
-	);
-
-	if ( isset( $primary_keys[$table_name] ) ) {
-		unset( $data[$primary_keys[$table_name]] );
-	}
-
-	return $data;
-}
-// Remove autosaves?
-// Serialize the table
-// Store as an option
+add_action( 'admin_action_demo_site_plugin_save_defaults', array( 'DSP_Database_Handler', 'save_defaults' ) );
+add_action( 'admin_action_demo_site_plugin_reset_defaults', array( 'DSP_Database_Handler', 'reset_defaults' ) );
