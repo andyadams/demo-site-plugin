@@ -11,6 +11,7 @@ require_once( dirname( __FILE__ ) . '/save_defaults.php' );
 
 function demo_site_plugin_add_rewrite_rules() {
 	add_rewrite_rule( 'demo-login/?$', 'index.php?demo_login=true', 'top' );
+	add_rewrite_rule( 'demo/([a-zA-Z0-9]*)/?$', 'index.php?demo_site=$matches[1]', 'top' );
 	global $wp_rewrite;
 	$wp_rewrite->flush_rules(false);
 }
@@ -28,6 +29,7 @@ add_filter( 'template_redirect', 'demo_site_plugin_template_redirect' );
 
 function demo_site_plugin_query_vars( $query_vars ){
     $query_vars[] = 'demo_login';
+    $query_vars[] = 'demo_site';
     return $query_vars;
 }
 add_filter( 'query_vars', 'demo_site_plugin_query_vars' );
@@ -93,7 +95,26 @@ function demo_site_plugin_create_site_with_token( $token ) {
 	demo_site_plugin_create_semi_admin_for_token( $token );
 
 	update_option( 'demo_site_plugin_active_demo_tokens', array( $token ) );
+
+	demo_site_plugin_switch_to_site_for_token( $token );
 }
+
+function demo_site_plugin_switch_to_site_for_token( $token ) {
+	global $demo_site_plugin_current_token;
+
+	$demo_site_plugin_current_token = $token;
+}
+
+function demo_site_plugin_admin_url( $url, $path, $blog_id ) {
+	global $demo_site_plugin_current_token;
+
+	if ( isset( $demo_site_plugin_current_token ) ) {
+		$url = get_site_url( $blog_id, "demo/{$demo_site_plugin_current_token}/wp-admin/", 'admin' );
+	}
+
+	return $url;
+}
+add_filter( 'admin_url', 'demo_site_plugin_admin_url', 10, 3 );
 
 function demo_site_plugin_create_semi_admin_for_token( $token ) {
 	global $wpdb;
@@ -106,9 +127,6 @@ function demo_site_plugin_create_semi_admin_for_token( $token ) {
 	$semi_admin_id = wp_create_user( 'semi_admin', 'password' );
 	$semi_admin = new WP_User( $semi_admin_id );
 	$semi_admin->set_role( 'semi-admin' );
-
-	global $wp_roles;
-	//var_dump( $wp_roles );
 
 	$wpdb->set_prefix( $original_prefix );
 }
