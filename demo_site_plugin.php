@@ -11,19 +11,32 @@ require_once( dirname( __FILE__ ) . '/save_defaults.php' );
 
 function demo_site_plugin_add_rewrite_rules() {
 	add_rewrite_rule( 'demo-login/?$', 'index.php?demo_login=true', 'top' );
-	add_rewrite_rule( 'demo/([a-zA-Z0-9]*)/?$', 'index.php?demo_site=$matches[1]', 'top' );
+	add_rewrite_rule( 'demo/([a-zA-Z0-9]*)/?', 'index.php?demo_site=$matches[1]', 'top' );
 	global $wp_rewrite;
 	$wp_rewrite->flush_rules(false);
 }
 add_action( 'init', 'demo_site_plugin_add_rewrite_rules' );
 
+function demo_site_plugin_switch_to_demo_site( $wp_query ) {
+	$token = $wp_query->get( 'demo_site' );
+	if ( isset( $token ) ) {
+		$active_tokens = get_option( 'demo_site_plugin_active_demo_tokens' );
+
+		if ( in_array( $token, $active_tokens ) ) {
+			echo "HERE!";exit;
+			demo_site_plugin_switch_to_site_for_token( $token );
+		}
+	}
+}
+add_action( 'parse_query', 'demo_site_plugin_switch_to_demo_site' );
+
 function demo_site_plugin_template_redirect() {
 	global $wp_query;
 
-	if( $wp_query->get( 'demo_login' ) ):
+	if ( $wp_query->get( 'demo_login' ) ) {
 		include( plugin_dir_path( __FILE__ ) . "/login.php" );
 		exit();
-	endif;
+	}
 }
 add_filter( 'template_redirect', 'demo_site_plugin_template_redirect' );
 
@@ -103,6 +116,10 @@ function demo_site_plugin_switch_to_site_for_token( $token ) {
 	global $demo_site_plugin_current_token;
 
 	$demo_site_plugin_current_token = $token;
+
+	global $wpdb;
+
+	$wpdb->set_prefix( "wp_{$token}_" );
 }
 
 function demo_site_plugin_admin_url( $url, $path, $blog_id ) {
