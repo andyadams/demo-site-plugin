@@ -119,5 +119,18 @@ function demo_site_plugin_admin_url( $url, $path, $blog_id ) {
 }
 add_filter( 'admin_url', 'demo_site_plugin_admin_url', 10, 3 );
 
-function demo_site_plugin_create_semi_admin_for_token( $token ) {
+function demo_site_plugin_login() {
+	if ( isset( $_POST['action'] ) && 'demo_site_plugin_login' == $_POST['action'] ) {
+		$demo_site = new DSP_DemoSite();
+		$demo_site->create();
+		$demo_site->activate();
+		wp_redirect( admin_url() );
+		exit;
+	}
 }
+add_action( 'init', 'demo_site_plugin_login' );
+
+function demo_site_plugin_bypass_login() {
+	echo 'admininit';
+}
+add_action( 'admin_init', 'demo_site_plugin_bypass_login' );
