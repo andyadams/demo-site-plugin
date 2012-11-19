@@ -26,7 +26,8 @@ class DemoLoginTest extends OTB_UnitTestCase {
 
 		$this->assertEmpty( $active_demo_tokens );
 
-		demo_site_plugin_create_site_with_token( $this->token );
+		$demo_site = new DSP_DemoSite( $this->token );
+		$demo_site->create();
 
 		$active_demo_tokens = get_option( 'demo_site_plugin_active_demo_tokens' );
 
@@ -39,7 +40,8 @@ class DemoLoginTest extends OTB_UnitTestCase {
 		$token = $this->token;
 		$prefix = $this->prefix;
 
-		demo_site_plugin_create_site_with_token( $token );
+		$demo_site = new DSP_DemoSite( $token );
+		$demo_site->create();
 
 		$created_tables = $wpdb->get_results( "SHOW TABLES LIKE '%$prefix%';" );
 
@@ -53,7 +55,8 @@ class DemoLoginTest extends OTB_UnitTestCase {
 
 		$token = $this->token;
 
-		demo_site_plugin_create_site_with_token( $token );
+		$demo_site = new DSP_DemoSite( $token );
+		$demo_site->create();
 
 		$semi_admin_users = get_users( array( 'role' => 'semi-admin' ) );
 

@@ -8,6 +8,7 @@ Version: 0.1
 Author URI: #
 */
 require_once( dirname( __FILE__ ) . '/save_defaults.php' );
+require_once( dirname( __FILE__ ) . '/demo_site.php' );
 
 function demo_site_plugin_add_rewrite_rules() {
 	add_rewrite_rule( 'demo-login/?$', 'index.php?demo_login=true', 'top' );
@@ -102,24 +103,9 @@ function demo_site_plugin_options_form() {
 	<?php
 }
 
-function demo_site_plugin_create_site_with_token( $token ) {
-	DSP_DatabaseHandler::clone_defaults( "wp_{$token}_" );
-
-	demo_site_plugin_create_semi_admin_for_token( $token );
-
-	update_option( 'demo_site_plugin_active_demo_tokens', array( $token ) );
-
-	demo_site_plugin_switch_to_site_for_token( $token );
-}
-
 function demo_site_plugin_switch_to_site_for_token( $token ) {
-	global $demo_site_plugin_current_token;
-
-	$demo_site_plugin_current_token = $token;
-
-	global $wpdb;
-
-	$wpdb->set_prefix( "wp_{$token}_" );
+	$demo_site = new DSP_DemoSite( $token );
+	$demo_site->activate();
 }
 
 function demo_site_plugin_admin_url( $url, $path, $blog_id ) {
@@ -134,16 +120,4 @@ function demo_site_plugin_admin_url( $url, $path, $blog_id ) {
 add_filter( 'admin_url', 'demo_site_plugin_admin_url', 10, 3 );
 
 function demo_site_plugin_create_semi_admin_for_token( $token ) {
-	global $wpdb;
-
-	$original_prefix = $wpdb->prefix;
-
-	$wpdb->set_prefix( "wp_{$token}_" );
-
-	add_role( 'semi-admin', 'Semi-Admin' );
-	$semi_admin_id = wp_create_user( 'semi_admin', 'password' );
-	$semi_admin = new WP_User( $semi_admin_id );
-	$semi_admin->set_role( 'semi-admin' );
-
-	$wpdb->set_prefix( $original_prefix );
 }
