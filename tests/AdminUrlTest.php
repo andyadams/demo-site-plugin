@@ -12,7 +12,7 @@ class AdminUrlTest extends OTB_UnitTestCase {
 	public function testAdminUrlForToken() {
 		demo_site_plugin_switch_to_site_for_token( $this->token );
 
-		$this->assertEquals( "http://example.org/demo/{$this->token}/wp-admin/", get_admin_url() );
+		$this->assertEquals( "/demo/{$this->token}/wp-admin/", get_admin_url() );
 	}
 
 	public function testAdminUrlQueryVars() {

@@ -22,7 +22,7 @@ function demo_site_plugin_switch_to_demo_site( $wp_query ) {
 	if ( isset( $token ) ) {
 		$active_tokens = get_option( 'demo_site_plugin_active_demo_tokens' );
 
-		if ( in_array( $token, $active_tokens ) ) {
+		if ( $active_tokens && in_array( $token, $active_tokens ) ) {
 			echo "HERE!";exit;
 			demo_site_plugin_switch_to_site_for_token( $token );
 		}
